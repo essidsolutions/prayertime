@@ -2,26 +2,38 @@ import 'package:flutter/material.dart';
 import 'screens/prayer_times_screen.dart';
 import 'screens/dhikr_screen.dart';
 import 'screens/allah_names_screen.dart';
+import 'screens/settings_screen.dart';
+import 'screens/youtube_video_screen.dart';
 
 void main() {
   runApp(PrayerApp());
 }
 
 class PrayerApp extends StatelessWidget {
+  final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.light);
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Prayer Times - Salat',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        scaffoldBackgroundColor: Colors.white, // Set background color to white
-      ),
-      home: HomeScreen(),
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: themeNotifier,
+      builder: (context, themeMode, child) {
+        return MaterialApp(
+          title: 'Prayer Times - Salat',
+          theme: ThemeData.light(),
+          darkTheme: ThemeData.dark(),
+          themeMode: themeMode,
+          home: HomeScreen(themeNotifier: themeNotifier),
+        );
+      },
     );
   }
 }
 
 class HomeScreen extends StatefulWidget {
+  final ValueNotifier<ThemeMode> themeNotifier;
+
+  HomeScreen({required this.themeNotifier});
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -32,7 +44,8 @@ class _HomeScreenState extends State<HomeScreen> {
   static List<Widget> _widgetOptions = <Widget>[
     PrayerTimesScreen(),
     DhikrScreen(),
-    AllahNamesScreen(), // Add the new screen here
+    AllahNamesScreen(),
+    YouTubeVideoScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -44,6 +57,22 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Prayer Times & Dhikr'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SettingsScreen(themeNotifier: widget.themeNotifier),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
@@ -60,6 +89,10 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.star),
             label: '99 Names',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.video_library),
+            label: 'Video',
           ),
         ],
         currentIndex: _selectedIndex,
