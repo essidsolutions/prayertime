@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'dhikr_screen.dart';
 
 class PrayerTimesScreen extends StatefulWidget {
   @override
@@ -13,6 +12,14 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
   Map<String, dynamic>? prayerTimes;
   LocationData? _currentPosition;
   Location location = Location();
+
+  final Map<String, IconData> prayerIcons = {
+    'Fajr': Icons.wb_sunny,
+    'Dhuhr': Icons.brightness_5,
+    'Asr': Icons.brightness_6,
+    'Maghrib': Icons.brightness_3,
+    'Isha': Icons.nightlight_round,
+  };
 
   @override
   void initState() {
@@ -61,30 +68,24 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Prayer Times'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.refresh),
-            onPressed: _getLocation,
-          ),
-          IconButton(
-            icon: Icon(Icons.list),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => DhikrScreen()),
-              );
-            },
-          ),
-        ],
       ),
       body: Center(
         child: prayerTimes == null
             ? CircularProgressIndicator()
             : ListView(
-          children: prayerTimes!.entries.map((entry) {
-            return ListTile(
-              title: Text(entry.key),
-              subtitle: Text(entry.value),
+          padding: EdgeInsets.all(8.0),
+          children: prayerTimes!.entries
+              .where((entry) => entry.key != "Imsak" && entry.key != "Midnight" && entry.key != "Firstthird")
+              .map((entry) {
+            return Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15.0),
+              ),
+              margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+              child: ListTile(
+                leading: Icon(prayerIcons[entry.key] ?? Icons.access_time),
+                title: Text('${entry.key} - ${entry.value}'),
+              ),
             );
           }).toList(),
         ),

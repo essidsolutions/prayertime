@@ -15,11 +15,18 @@ class DhikrScreen extends StatelessWidget {
         title: Text('Dhikr'),
       ),
       body: ListView.builder(
+        padding: EdgeInsets.all(8.0),
         itemCount: dhikrList.length,
         itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(dhikrList[index]['arabic']!),
-            subtitle: Text(dhikrList[index]['english']!),
+          return Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15.0),
+            ),
+            margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+            child: ListTile(
+              title: Text(dhikrList[index]['arabic']!),
+              subtitle: Text(dhikrList[index]['english']!),
+            ),
           );
         },
       ),
